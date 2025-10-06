@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 from datetime import datetime
 from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import InstalledAppFlow # type: ignore
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -85,8 +85,8 @@ class DriveConnector(ConnectorInterface):
             self.authenticated = False
             return False
     
-    def fetch_data(self, query: str = None, max_results: int = 100, 
-                  file_types: List[str] = None, **kwargs) -> List[Dict[str, Any]]:
+    def fetch_data(self, query: str = None, max_results: int = 100,  # type: ignore
+                  file_types: List[str] = None, **kwargs) -> List[Dict[str, Any]]: # type: ignore
         """
         Fetch documents from Google Drive
         

@@ -4,10 +4,10 @@ import os, json
 from dotenv import load_dotenv
 import google.generativeai as genai
 import chromadb
-from connector_interface import ConnectorInterface
-from drive_connector import DriveConnector
-from slack_connector import SlackConnector
-from github_connector import GitHubConnector
+from connectors.connector_interface import ConnectorInterface
+from connectors.drive_connector import DriveConnector
+from connectors.slack_connector import SlackConnector
+from connectors.github_connector import GitHubConnector
 
 # Load environment variables
 load_dotenv()
@@ -31,7 +31,7 @@ gemini_ef = chromadb.utils.embedding_functions.GoogleGenerativeAiEmbeddingFuncti
     model_name=EMBEDDING_MODEL
 )
 
-def process_teams_data(file_path="teams_chat_poc_data_extended.json"):
+def process_teams_data(file_path="data/teams_chat_poc_data_extended.json"):
     """Process Teams data from file or API"""
     teams_collection = chroma_client.get_or_create_collection(
         "teams_chat_knowledge",
@@ -65,7 +65,7 @@ def process_teams_data(file_path="teams_chat_poc_data_extended.json"):
     )
     print(f"✅ Stored {len(teams_messages)} Teams messages in ChromaDB!")
 
-def process_jira_data(file_path="jira_tickets_poc_data_extended.json"):
+def process_jira_data(file_path="data/jira_tickets_poc_data_extended.json"):
     """Process Jira data from file or API"""
     jira_collection = chroma_client.get_or_create_collection(
         "jira_tickets_knowledge",
