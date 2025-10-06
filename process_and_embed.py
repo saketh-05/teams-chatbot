@@ -103,55 +103,90 @@ def process_jira_data(file_path="data/jira_tickets_poc_data_extended.json"):
     print(f"✅ Stored {len(jira_tickets)} Jira tickets in ChromaDB!")
 
 def process_connector_data(connector: ConnectorInterface, collection_name: str, **kwargs):
-    """Process data from any connector implementing the ConnectorInterface"""
+    """Fetch, embed, and store processed connector data (GitHub, Drive, etc.) into ChromaDB."""
+
+    # Create or get ChromaDB collection
     collection = chroma_client.get_or_create_collection(
         collection_name,
         embedding_function=gemini_ef
     )
-    
-    # Run the connector pipeline to get processed data
+
     try:
+        # Run connector pipeline (fetch + process)
         processed_data = connector.run_pipeline(**kwargs)
-        print(f"Fetched {len(processed_data)} items from {connector.__class__.__name__}")
-        
-        # Prepare data for ChromaDB
-        ids = []
-        documents = []
-        metadatas = []
-        
-        for item in processed_data:
-            # Extract common fields
-            item_id = item.get("id", f"{collection_name}_{len(ids)}")
-            
-            # Create document text based on the data structure
-            if "message" in item:
-                # For message-based data (Slack, Teams)
-                document = f"Sender: {item.get('sender', 'Unknown')} in {item.get('channel', 'Unknown')}. Message: {item['message']}"
+        print(f"📦 Fetched {len(processed_data)} items from {connector.__class__.__name__}")
+
+        ids, documents, metadatas = [], [], []
+
+        for idx, item in enumerate(processed_data):
+            item_id = str(item.get("id", f"{collection_name}_{idx}"))
+            source = item.get("source", "").lower()
+
+            # 🧠 Smart document formatting based on source
+            if source == "github":
+                repo = item.get("metadata", {}).get("repository", "")
+                title = item.get("title", "")
+                content = item.get("content", "")
+                url = item.get("url", "")
+                document = (
+                    f"📚 Source: GitHub\n"
+                    f"Repository: {repo}\n"
+                    f"Title: {title}\n"
+                    f"URL: {url}\n\n"
+                    f"Content:\n{content}"
+                )
+
+            elif source == "google drive":
+                title = item.get("title", "Untitled")
+                owner = item.get("owner", "Unknown")
+                file_type = item.get("type", "unknown")
+                created = item.get("created", "Unknown date")
+                content = item.get("message", "[No text extracted]")
+                document = (
+                    f"📂 Source: Google Drive\n"
+                    f"Title: {title}\n"
+                    f"Owner: {owner}\n"
+                    f"File Type: {file_type}\n"
+                    f"Created: {created}\n\n"
+                    f"Content:\n{content}"
+                )
+
+            elif "message" in item and "sender" in item:
+                # Teams / Slack style messages
+                sender = item.get("sender", "Unknown")
+                channel = item.get("channel", "Unknown")
+                msg = item["message"]
+                document = f"💬 Sender: {sender} in {channel}\nMessage: {msg}"
+
             elif "title" in item and "message" in item:
-                # For document-based data (Drive)
-                document = f"Title: {item['title']}. Owner: {item.get('owner', 'Unknown')}. Content: {item['message']}"
+                # Generic document-like data
+                document = f"Title: {item['title']} | Owner: {item.get('owner', 'Unknown')} | Content: {item['message']}"
+
             else:
-                # Generic fallback
+                # Fallback for unknown structures
                 document = json.dumps({k: v for k, v in item.items() if k != "id"})
-            
-            # Add to collections
+
+            # 🧾 Metadata cleanup
+            meta = {k: v for k, v in item.items() if isinstance(v, (str, int, float, bool))}
+            meta["source"] = source
+
             ids.append(item_id)
             documents.append(document)
-            metadatas.append({k: v for k, v in item.items() if k != "message" and isinstance(v, (str, int, float, bool))})
-        
-        # Add to ChromaDB
+            metadatas.append(meta)
+
+        # 🚀 Add to ChromaDB
         if ids:
             collection.add(
                 ids=ids,
                 documents=documents,
                 metadatas=metadatas
             )
-            print(f"✅ Stored {len(ids)} items in ChromaDB collection '{collection_name}'!")
+            print(f"✅ Indexed {len(ids)} items from {connector.__class__.__name__} into '{collection_name}'")
         else:
             print("⚠️ No data to store in ChromaDB.")
-            
+
         return len(ids)
-    
+
     except Exception as e:
         print(f"❌ Error processing data from {connector.__class__.__name__}: {str(e)}")
         return 0
@@ -159,57 +194,58 @@ def process_connector_data(connector: ConnectorInterface, collection_name: str, 
 def main():
     """Main function to run the data processing pipeline"""
     # Process Teams data (from file for now)
-    process_teams_data()
+    # process_teams_data() # Uncomment if Teams data file is available
     
     # Process Jira data (from file for now)
-    process_jira_data()
+    # process_jira_data() # Uncomment if Jira data file is available
     
     # Process Google Drive data (if credentials available)
-    # if os.path.exists("credentials.json"):
-    #     try:
-    #         drive_connector = DriveConnector()
-    #         process_connector_data(
-    #             drive_connector, 
-    #             "drive_documents_knowledge",
-    #             max_results=50,  # Adjust as needed
-    #             file_types=['application/vnd.google-apps.document', 'text/plain']
-    #         )
-    #     except Exception as e:
-    #         print(f"❌ Error processing Drive data: {str(e)}")
-    # else:
-    #     print("⚠️ Google Drive credentials not found. Skipping Drive connector.")
+    if os.path.exists("credentials.json"):
+        try:
+            drive_connector = DriveConnector()
+            process_connector_data(
+                drive_connector, 
+                "drive_documents_knowledge",
+                max_results=10,  # Adjust as needed
+                folder_name="teams-chatbot",
+                file_types=['application/pdf']
+            )
+        except Exception as e:
+            print(f"❌ Error processing Drive data: {str(e)}")
+    else:
+        print("⚠️ Google Drive credentials not found. Skipping Drive connector.")
     
     # Process Slack data (if token available)
-    if os.getenv("SLACK_BOT_TOKEN"):
-        try:
-            slack_connector = SlackConnector()
-            process_connector_data(
-                slack_connector, 
-                "slack_messages_knowledge",
-                limit=100  # Adjust as needed
-            )
-        except Exception as e:
-            print(f"❌ Error processing Slack data: {str(e)}")
-    else:
-        print("⚠️ Slack token not found. Skipping Slack connector.")
+    # if os.getenv("SLACK_BOT_TOKEN"): # Uncomment if Slack integration is needed
+    #     try:
+    #         slack_connector = SlackConnector()
+    #         process_connector_data(
+    #             slack_connector, 
+    #             "slack_messages_knowledge",
+    #             limit=100  # Adjust as needed
+    #         )
+    #     except Exception as e:
+    #         print(f"❌ Error processing Slack data: {str(e)}")
+    # else:
+    #     print("⚠️ Slack token not found. Skipping Slack connector.")
         
     # Process GitHub data (if token available)
-    if os.getenv("GITHUB_ACCESS_TOKEN"):
-        try:
-            github_connector = GitHubConnector()
-            process_connector_data(
-                github_connector,
-                "github_knowledge",
-                repos=["saketh-05/teams-chatbot", "saketh-05/codesen"],
-                include_issues=True,
-                include_prs=True,
-                include_readme=True,
-                max_items=50
-            )
-        except Exception as e:
-            print(f"❌ Error processing GitHub data: {str(e)}")
-    else:
-        print("⚠️ GitHub token not found. Skipping GitHub connector.")
+    # if os.getenv("GITHUB_ACCESS_TOKEN"): # Uncomment if GitHub integration is needed
+    #     try:
+    #         github_connector = GitHubConnector()
+    #         process_connector_data(
+    #             github_connector,
+    #             "github_knowledge",
+    #             repos=["saketh-05/teams-chatbot", "saketh-05/codesen"],
+    #             include_issues=True,
+    #             include_prs=True,
+    #             include_readme=True,
+    #             max_items=50
+    #         )
+    #     except Exception as e:
+    #         print(f"❌ Error processing GitHub data: {str(e)}")
+    # else:
+    #     print("⚠️ GitHub token not found. Skipping GitHub connector.")
     
     print("\n✅ All data sources processed and embedded successfully!")
 

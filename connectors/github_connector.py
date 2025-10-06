@@ -1,5 +1,5 @@
 # github_connector.py
-from connector_interface import ConnectorInterface
+from .connector_interface import ConnectorInterface
 from typing import List, Dict, Any
 import requests
 import os

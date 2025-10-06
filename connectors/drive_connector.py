@@ -10,7 +10,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow # type: ignore
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from connector_interface import ConnectorInterface
+from .connector_interface import ConnectorInterface
 
 # Configure logging
 logger = logging.getLogger("DriveConnector")
@@ -85,79 +85,89 @@ class DriveConnector(ConnectorInterface):
             self.authenticated = False
             return False
     
-    def fetch_data(self, query: str = None, max_results: int = 100,  # type: ignore
-                  file_types: List[str] = None, **kwargs) -> List[Dict[str, Any]]: # type: ignore
+    def fetch_data(self, folder_name: str = None, max_results: int = 100, # type: ignore
+                file_types: List[str] = None, **kwargs) -> List[Dict[str, Any]]: # type: ignore
         """
         Fetch documents from Google Drive
-        
+
         Args:
-            query: Search query for Drive files (optional)
+            folder_name: Name of the folder to fetch files from
             max_results: Maximum number of results to return
-            file_types: List of MIME types to filter by (e.g. 'application/pdf')
-        
+            file_types: List of MIME types to filter by (e.g. ['application/pdf'])
+
         Returns:
             List of document dictionaries with metadata
         """
         if not self.service:
             raise Exception("Not authenticated. Call authenticate() first.")
-        
-        # Build the query string
-        query_parts = []
-        if query:
-            query_parts.append(f"fullText contains '{query}'")
-        
+
+        # --- Step 1: Find folder ID if folder_name is given ---
+        folder_query = ""
+        if folder_name:
+            try:
+                folder_result = self.service.files().list(
+                    q=f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder'",
+                    spaces='drive',
+                    fields='files(id, name)',
+                ).execute()
+
+                if not folder_result['files']:
+                    raise Exception(f"❌ Folder '{folder_name}' not found in your Drive.")
+
+                folder_id = folder_result['files'][0]['id']
+                folder_query = f"'{folder_id}' in parents"
+            except Exception as e:
+                logger.error(f"Error locating folder '{folder_name}': {str(e)}")
+                raise
+
+        # --- Step 2: Build MIME type filter ---
+        mime_query = ""
         if file_types:
-            mime_type_conditions = [f"mimeType='{mime_type}'" for mime_type in file_types]
-            query_parts.append(f"({' or '.join(mime_type_conditions)})")
-        
-        # Only include files, not folders
-        query_parts.append("mimeType != 'application/vnd.google-apps.folder'")
-        
-        # Combine all query parts
-        query_string = " and ".join(query_parts) if query_parts else ""
-        
-        # Execute the query
+            mime_conditions = [f"mimeType='{m}'" for m in file_types]
+            mime_query = "(" + " or ".join(mime_conditions) + ")"
+
+        # --- Step 3: Combine all conditions ---
+        query_parts = [q for q in [folder_query, mime_query, "mimeType != 'application/vnd.google-apps.folder'"] if q]
+        query_string = " and ".join(query_parts)
+
+        # --- Step 4: Execute Drive API request ---
         results = []
         page_token = None
-        
+
         while True:
             response = self.service.files().list(
                 q=query_string,
                 spaces='drive',
                 fields='nextPageToken, files(id, name, mimeType, description, createdTime, modifiedTime, owners)',
                 pageToken=page_token,
-                pageSize=min(max_results, 100)  # API limit is 100 per page
+                pageSize=min(max_results, 100)
             ).execute()
-            
+
             results.extend(response.get('files', []))
-            
-            # Check if we have more pages and if we've reached max_results
             page_token = response.get('nextPageToken')
+
             if not page_token or len(results) >= max_results:
                 break
-        
-        # Fetch content for each document (where possible)
+
+        # --- Step 5: Extract or export content for each file ---
         for item in results:
             try:
-                # For Google Docs, Sheets, etc. we need to export them
-                if item['mimeType'].startswith('application/vnd.google-apps'):
-                    if item['mimeType'] == 'application/vnd.google-apps.document':
-                        content = self.service.files().export(
-                            fileId=item['id'], mimeType='text/plain').execute().decode('utf-8')
-                    else:
-                        content = f"[Content not extracted for {item['mimeType']}]"
+                if item['mimeType'] == 'application/vnd.google-apps.document':
+                    content = self.service.files().export(
+                        fileId=item['id'], mimeType='text/plain').execute().decode('utf-8')
+                elif item['mimeType'].startswith('text/'):
+                    content = self.service.files().get_media(fileId=item['id']).execute().decode('utf-8')
+                elif item['mimeType'] == 'application/pdf':
+                    content = "[PDF content not extracted in this version]"
                 else:
-                    # For regular files, download the content if it's text-based
-                    if item['mimeType'].startswith('text/') or 'pdf' in item['mimeType']:
-                        content = self.service.files().get_media(fileId=item['id']).execute().decode('utf-8')
-                    else:
-                        content = f"[Binary content for {item['mimeType']}]"
-                
+                    content = f"[Unsupported type: {item['mimeType']}]"
+
                 item['content'] = content
             except Exception as e:
                 item['content'] = f"[Error extracting content: {str(e)}]"
-        
+
         return results[:max_results]
+
     
     def process_data(self, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """

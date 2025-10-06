@@ -7,7 +7,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from slack_sdk import WebClient # type: ignore
 from slack_sdk.errors import SlackApiError # type: ignore
-from connector_interface import ConnectorInterface
+from .connector_interface import ConnectorInterface
 
 # Configure logging
 logger = logging.getLogger("SlackConnector")
