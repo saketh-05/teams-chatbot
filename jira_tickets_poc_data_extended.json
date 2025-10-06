@@ -1,0 +1,360 @@
+[
+  {
+    "id": "11001",
+    "key": "DRZ-452",
+    "summary": "Implement new 'Safe-Landing' algorithm based on Gyro-Failsafe v2.1",
+    "status": "Done",
+    "priority": "High",
+    "project": "Drone Model Z",
+    "issueType": "Story",
+    "assignee": "Sarah Connor",
+    "created": "2024-07-01T10:00:00Z",
+    "updated": "2024-07-15T16:30:00Z",
+    "description": "The current landing sequence is too aggressive in windy conditions. Integrate the new v2.1 algorithm from the 'Flight-Core' repo for a smoother 3-point landing in crosswinds >15 kph. This is a primary customer request.",
+    "comments": [
+      {"author": "John Smith", "body": "Initial integration branch pushed. Note: requires update to the 'telemetry-parser' config to properly ingest the new wind shear variables.", "created": "2024-07-05T11:00:00Z"},
+      {"author": "Sarah Connor", "body": "Testing complete. The **key change was capping the descent rate at 0.5m/s** when the Gyro-Z reading exceeded a 5-degree threshold. Closing ticket.", "created": "2024-07-15T16:20:00Z"}
+    ]
+  },
+  {
+    "id": "11002",
+    "key": "DRZ-453",
+    "summary": "BUG: Motors occasionally stutter at 75% throttle during long flights",
+    "status": "In Progress",
+    "priority": "Highest",
+    "project": "Drone Model Z",
+    "issueType": "Bug",
+    "assignee": "John Smith",
+    "created": "2024-08-20T09:15:00Z",
+    "updated": "2024-09-02T14:45:00Z",
+    "description": "Observed in 4 separate flight logs. Power output briefly dips (1-2 seconds) when throttle is held at sustained 75% for over 5 minutes. Suspected thermal or voltage regulation issue.",
+    "comments": [
+      {"author": "Sarah Connor", "body": "Hardware analysis complete. The issue is confirmed to be voltage drop on the PDB rail under sustained load. **Decision:** We are switching the main capacitor from 1000uF to a **1500uF low-ESR variant** for all future units (Batch 3+).", "created": "2024-08-25T13:00:00Z"},
+      {"author": "John Smith", "body": "Acknowledged. Updating BOM and notifying manufacturing. Marking as 'In Progress' until change is confirmed in production.", "created": "2024-09-02T14:40:00Z"}
+    ]
+  },
+  {
+    "id": "11003",
+    "key": "DRZ-454",
+    "summary": "Investigate compatibility with new 'GoPro 13' camera model API",
+    "status": "To Do",
+    "priority": "Medium",
+    "project": "Drone Model Z",
+    "issueType": "Task",
+    "assignee": "Pending",
+    "created": "2024-09-10T11:20:00Z",
+    "updated": "2024-09-10T11:20:00Z",
+    "description": "New camera model released. Need to verify our on-drone telemetry overlay and remote camera control features still function correctly via the new v3 Camera API endpoints. This is a future compatibility task.",
+    "comments": []
+  },
+  {
+    "id": "11004",
+    "key": "DRZ-455",
+    "summary": "Re-evaluate motor overheating threshold (firmware 1.8.2)",
+    "status": "Done",
+    "priority": "Medium",
+    "project": "Drone Model Z",
+    "issueType": "Task",
+    "assignee": "John Smith",
+    "created": "2024-09-15T09:00:00Z",
+    "updated": "2024-09-18T10:00:00Z",
+    "description": "With new high-temp stator insulation, the current 70°C warning is too conservative and triggers unnecessary landings. Propose a new threshold.",
+    "comments": [
+      {"author": "John Smith", "body": "Testing with new insulation shows peak sustained temps of 72°C are safe. **Final Decision:** Increasing the firmware warning threshold to **75°C**.", "created": "2024-09-18T09:55:00Z"}
+    ]
+  },
+  {
+    "id": "11005",
+    "key": "DRZ-456",
+    "summary": "Document new 'Power-Saving' mode activation sequence",
+    "status": "Done",
+    "priority": "Low",
+    "project": "Drone Model Z",
+    "issueType": "Documentation",
+    "assignee": "Ethan Hunt",
+    "created": "2024-09-20T11:00:00Z",
+    "updated": "2024-09-21T11:30:00Z",
+    "description": "The activation sequence changed in v1.8.2 to prevent accidental activation. Update all user manuals and internal SOPs.",
+    "comments": [
+      {"author": "Ethan Hunt", "body": "Updated all documentation. The new sequence is: **Throttle Down > Mode Switch 3 > Wait 5s**. Uploaded the final PDF to Drive.", "created": "2024-09-21T11:25:00Z"}
+    ]
+  },
+  {
+    "id": "11006",
+    "key": "DRZ-457",
+    "summary": "Feature: Add geo-fencing capability for Europe market compliance",
+    "status": "To Do",
+    "priority": "Critical",
+    "project": "Drone Model Z",
+    "issueType": "Epic",
+    "assignee": "Alex Chen",
+    "created": "2024-09-22T08:00:00Z",
+    "updated": "2024-09-22T08:00:00Z",
+    "description": "Must implement EU regulatory zone logic to prevent flight in restricted areas. Requires new map data ingestion module.",
+    "comments": []
+  },
+  {
+    "id": "11007",
+    "key": "DRZ-458",
+    "summary": "BUG: GPS Lock loss in urban canyons (Regression v1.7.5)",
+    "status": "Closed",
+    "priority": "High",
+    "project": "Drone Model Z",
+    "issueType": "Bug",
+    "assignee": "Ben Kim",
+    "created": "2024-09-25T14:30:00Z",
+    "updated": "2024-09-26T10:15:00Z",
+    "description": "GPS module disconnects briefly when signal quality drops below 30%. Started happening after a recent power management board revision.",
+    "comments": [
+      {"author": "Ben Kim", "body": "Root cause was insufficient power to the GPS unit during high current draw. **Fix:** Increased GPS power output from **3.3V to 3.5V** via a hardware jumper modification on the next batch PDBs.", "created": "2024-09-26T10:10:00Z"}
+    ]
+  },
+  {
+    "id": "11008",
+    "key": "DRZ-459",
+    "summary": "Refactor 'Flight-Core' telemetry module to use Protobuf over JSON",
+    "status": "In Review",
+    "priority": "Medium",
+    "project": "Drone Model Z",
+    "issueType": "Task",
+    "assignee": "Alex Chen",
+    "created": "2024-09-28T09:45:00Z",
+    "updated": "2024-10-01T14:00:00Z",
+    "description": "Migrate data serialization from bulky JSON to efficient Protobuf for a 40% reduction in transmission size and latency.",
+    "comments": [
+      {"author": "Alex Chen", "body": "Migration complete. Pull Request #302 is ready for review. Focusing primarily on the `sensor_data` schema.", "created": "2024-10-01T13:55:00Z"}
+    ]
+  },
+  {
+    "id": "11009",
+    "key": "DRZ-460",
+    "summary": "Investigate 404 error on new firmware update server",
+    "status": "Closed",
+    "priority": "High",
+    "project": "Drone Model Z",
+    "issueType": "Bug",
+    "assignee": "Chloe Davis",
+    "created": "2024-10-02T16:00:00Z",
+    "updated": "2024-10-02T18:30:00Z",
+    "description": "Clients cannot download the v1.9.0 firmware. Server responds with 404 Not Found.",
+    "comments": [
+      {"author": "Chloe Davis", "body": "Root cause identified: The new **S3 bucket was configured without public read access**, and the CDN cache wasn't cleared after deployment. Fixed both issues.", "created": "2024-10-02T18:25:00Z"}
+    ]
+  },
+  {
+    "id": "11010",
+    "key": "DRZ-461",
+    "summary": "Create test plan for waterproof casing validation (IPX8)",
+    "status": "Done",
+    "priority": "Medium",
+    "project": "Drone Model Z",
+    "issueType": "Task",
+    "assignee": "Ethan Hunt",
+    "created": "2024-10-05T08:30:00Z",
+    "updated": "2024-10-08T10:00:00Z",
+    "description": "Need a formal test plan defining pressure, submersion time, and temperature ranges for the IPX8 rating.",
+    "comments": [
+      {"author": "Ethan Hunt", "body": "Test plan complete. Key criteria: **Submersion at 2 meters for 60 minutes**, no ingress allowed. Test document linked.", "created": "2024-10-08T09:55:00Z"}
+    ]
+  },
+  {
+    "id": "11011",
+    "key": "DRZ-462",
+    "summary": "R&D: Integrate LiDAR sensor for future obstacle avoidance module",
+    "status": "To Do",
+    "priority": "Medium",
+    "project": "Drone Model Z",
+    "issueType": "Epic",
+    "assignee": "Pending",
+    "created": "2024-10-10T11:00:00Z",
+    "updated": "2024-10-10T11:00:00Z",
+    "description": "Evaluate the new Velodyne Puck LITE LiDAR for size, power consumption, and data rate suitability for our next-gen drone.",
+    "comments": []
+  },
+  {
+    "id": "11012",
+    "key": "DRZ-463",
+    "summary": "BUG: Companion app crashes on iOS 17 beta during RTH sequence",
+    "status": "Closed",
+    "priority": "High",
+    "project": "Drone Model Z",
+    "issueType": "Bug",
+    "assignee": "Chloe Davis",
+    "created": "2024-10-12T14:00:00Z",
+    "updated": "2024-10-13T09:30:00Z",
+    "description": "App crashes specifically when the 'Return to Home' (RTH) command is initiated. Only on iOS 17 beta devices.",
+    "comments": [
+      {"author": "Chloe Davis", "body": "Found a lifecycle bug in an external library. **Fix:** Updated dependency `react-native-os-util` to version **1.4.2** (latest patch). Build `1.9.1-P` is ready for QA.", "created": "2024-10-13T09:25:00Z"}
+    ]
+  },
+  {
+    "id": "11013",
+    "key": "DRZ-464",
+    "summary": "Update drone maintenance schedule documentation",
+    "status": "Done",
+    "priority": "Low",
+    "project": "Drone Model Z",
+    "issueType": "Documentation",
+    "assignee": "Ethan Hunt",
+    "created": "2024-10-15T09:40:00Z",
+    "updated": "2024-10-16T15:00:00Z",
+    "description": "Revise the gimbal lubrication frequency from 100 hours to 75 hours of flight time.",
+    "comments": [
+      {"author": "Ethan Hunt", "body": "Documentation revised and uploaded to the 'SOP' folder in Google Drive. **Key change:** Gimbal lubrication every **75 flight hours**.", "created": "2024-10-16T14:55:00Z"}
+    ]
+  },
+  {
+    "id": "11014",
+    "key": "DRZ-465",
+    "summary": "New Requirement: Add custom PID tuning via web interface",
+    "status": "To Do",
+    "priority": "High",
+    "project": "Drone Model Z",
+    "issueType": "Story",
+    "assignee": "Ben Kim",
+    "created": "2024-10-18T10:00:00Z",
+    "updated": "2024-10-18T10:00:00Z",
+    "description": "Allow advanced users to configure Proportional, Integral, and Derivative (PID) flight control parameters via the local web interface.",
+    "comments": []
+  },
+  {
+    "id": "11015",
+    "key": "DRZ-466",
+    "summary": "Regression: Altitude hold drifts after 10 minutes",
+    "status": "In Progress",
+    "priority": "Highest",
+    "project": "Drone Model Z",
+    "issueType": "Bug",
+    "assignee": "Sarah Connor",
+    "created": "2024-10-20T12:00:00Z",
+    "updated": "2024-10-22T14:00:00Z",
+    "description": "The drone gradually loses or gains altitude over time when the 'Altitude Hold' mode is engaged. Only occurs after the drone has been airborne for >10 minutes.",
+    "comments": [
+      {"author": "Sarah Connor", "body": "Initial investigation points to a **pressure sensor calibration drift** due to internal temperature changes. Looking into a dynamic temperature compensation solution in the firmware.", "created": "2024-10-22T13:55:00Z"}
+    ]
+  },
+  {
+    "id": "11016",
+    "key": "DRZ-467",
+    "summary": "Setup CI/CD pipeline for firmware patch releases",
+    "status": "Done",
+    "priority": "Medium",
+    "project": "Tooling",
+    "issueType": "Task",
+    "assignee": "Chloe Davis",
+    "created": "2024-10-25T11:30:00Z",
+    "updated": "2024-10-28T10:00:00Z",
+    "description": "Automate the build, testing, and signing process for all minor firmware updates (e.g., v1.9.x) using Jenkins.",
+    "comments": [
+      {"author": "Chloe Davis", "body": "Jenkins pipeline configured and tested. Jobs are now triggered by a Git tag push. Automated signing uses the **`release-key-v2`** environment variable.", "created": "2024-10-28T09:55:00Z"}
+    ]
+  },
+  {
+    "id": "11017",
+    "key": "DRZ-468",
+    "summary": "Documentation: Guide for flashing new ESC firmware",
+    "status": "Done",
+    "priority": "Low",
+    "project": "Drone Model Z",
+    "issueType": "Documentation",
+    "assignee": "Ethan Hunt",
+    "created": "2024-10-29T13:00:00Z",
+    "updated": "2024-10-30T10:30:00Z",
+    "description": "Create a clear guide for flashing the Electronic Speed Controller (ESC) firmware from v5.0 to v5.1 using the BLHeliSuite software.",
+    "comments": [
+      {"author": "Ethan Hunt", "body": "Step-by-step guide is live on the internal wiki under the 'Flashing Procedures' section. Crucial step: **Bridge pads 3 & 4 on the board** before connecting the programmer.", "created": "2024-10-30T10:25:00Z"}
+    ]
+  },
+  {
+    "id": "11018",
+    "key": "DRZ-469",
+    "summary": "BUG: Radio signal drops intermittently past 1km range",
+    "status": "Blocked",
+    "priority": "Highest",
+    "project": "Drone Model Z",
+    "issueType": "Bug",
+    "assignee": "John Smith",
+    "created": "2024-11-01T09:00:00Z",
+    "updated": "2024-11-05T15:00:00Z",
+    "description": "Customers report signal loss at ranges where v1 hardware performed perfectly. This is a critical safety issue.",
+    "comments": [
+      {"author": "John Smith", "body": "Confirmed this is a new interference pattern caused by the camera shielding. **Blocked by hardware team** on antenna placement redesign (see related ticket **HW-301**).", "created": "2024-11-05T14:55:00Z"}
+    ]
+  },
+  {
+    "id": "11019",
+    "key": "DRZ-470",
+    "summary": "User Story: Drone returns to home on low battery",
+    "status": "Done",
+    "priority": "High",
+    "project": "Drone Model Z",
+    "issueType": "Story",
+    "assignee": "Sarah Connor",
+    "created": "2024-11-08T10:30:00Z",
+    "updated": "2024-11-12T10:45:00Z",
+    "description": "The drone should automatically trigger Return to Home (RTH) when the battery level is critically low, ensuring safe recovery.",
+    "comments": [
+      {"author": "Sarah Connor", "body": "Feature implemented and tested. The RTH trigger is now set to **15% battery level**. This value gives us a 95% confidence rate for a safe 2km return in standard conditions.", "created": "2024-11-12T10:40:00Z"}
+    ]
+  },
+  {
+    "id": "11020",
+    "key": "DRZ-471",
+    "summary": "Re-evaluate cloud logging costs for Q4",
+    "status": "To Do",
+    "priority": "Medium",
+    "project": "Finance/Cost",
+    "issueType": "Task",
+    "assignee": "Chloe Davis",
+    "created": "2024-11-15T09:00:00Z",
+    "updated": "2024-11-15T09:00:00Z",
+    "description": "Analyze log volume, retention policy, and sampling rates to reduce cloud logging expenditure for the next quarter.",
+    "comments": []
+  },
+  {
+    "id": "11021",
+    "key": "DRZ-472",
+    "summary": "Feature: Support for custom flight paths (waypoint system)",
+    "status": "In Review",
+    "priority": "High",
+    "project": "Drone Model Z",
+    "issueType": "Story",
+    "assignee": "Ben Kim",
+    "created": "2024-11-18T14:00:00Z",
+    "updated": "2024-11-20T10:00:00Z",
+    "description": "Implement a waypoint system that allows pre-programming of autonomous flight missions through the companion app.",
+    "comments": [
+      {"author": "Ben Kim", "body": "Waypoint logic implementation complete. PR #310 is ready. I used the **Bresenham's line algorithm** for path discretization to ensure smooth transitions.", "created": "2024-11-20T09:55:00Z"}
+    ]
+  },
+  {
+    "id": "11022",
+    "key": "DRZ-473",
+    "summary": "Security: Run static analysis on new comms module",
+    "status": "Done",
+    "priority": "Medium",
+    "project": "Security",
+    "issueType": "Task",
+    "assignee": "Alex Chen",
+    "created": "2024-11-22T11:00:00Z",
+    "updated": "2024-11-25T11:00:00Z",
+    "description": "Perform a security review of the new encrypted communication module (v3) before deployment.",
+    "comments": [
+      {"author": "Alex Chen", "body": "Static analysis passed. **No critical buffer overflow or injection vulnerabilities found** in the C++ comms module.", "created": "2024-11-25T10:55:00Z"}
+    ]
+  },
+  {
+    "id": "11023",
+    "key": "DRZ-474",
+    "summary": "Refactor: Update telemetry parser to handle dynamic sensor payloads",
+    "status": "In Progress",
+    "priority": "Medium",
+    "project": "Platform",
+    "issueType": "Technical Debt",
+    "assignee": "Chloe Davis",
+    "created": "2024-11-28T14:30:00Z",
+    "updated": "2024-11-28T14:30:00Z",
+    "description": "The current parser is hard-coded for 8 sensors. With R&D adding LiDAR (DRZ-462), we need a flexible payload parser that can adapt to different sensor counts.",
+    "comments": []
+  }
+]

@@ -1,0 +1,184 @@
+[
+  {
+    "id": "msg_teams_001",
+    "sender": "Alex Chen (Architect)",
+    "timestamp": "2024-09-28T14:00:00Z",
+    "channel": "#system-architecture-v2",
+    "message": "Team, we need to finalize the data persistence layer for the new Ground Station Control (GSC) app. Option A: PostgreSQL with a custom ORM, or Option B: MongoDB (NoSQL) for faster prototyping."
+  },
+  {
+    "id": "msg_teams_002",
+    "sender": "Ben Kim (Dev Lead)",
+    "timestamp": "2024-09-28T14:05:00Z",
+    "channel": "#system-architecture-v2",
+    "message": "I lean towards **Option A (PostgreSQL)**. While NoSQL is quicker to start, our primary data (flight logs, user profiles, sensor data) is highly relational and benefits from ACID compliance. Long-term maintenance cost for MongoDB will be higher."
+  },
+  {
+    "id": "msg_teams_003",
+    "sender": "Chloe Davis (Data Sci)",
+    "timestamp": "2024-09-28T14:15:00Z",
+    "channel": "#system-architecture-v2",
+    "message": "Agree with Ben. Our analytics pipeline relies heavily on SQL joins across log tables. Switching to NoSQL would require a separate ETL process just for analytics. PostgreSQL saves us that step."
+  },
+  {
+    "id": "msg_teams_004",
+    "sender": "Ethan Hunt (QA)",
+    "timestamp": "2024-09-28T14:20:00Z",
+    "channel": "#system-architecture-v2",
+    "message": "From a QA perspective, having schema constraints in Postgres greatly simplifies data validation and testing. +1 for A."
+  },
+  {
+    "id": "msg_teams_005",
+    "sender": "Alex Chen (Architect)",
+    "timestamp": "2024-09-28T15:00:00Z",
+    "channel": "#system-architecture-v2",
+    "message": "**Decision Finalized:** We will proceed with **PostgreSQL** for the GSC data persistence layer. Ben, please start the setup documentation and ticket creation for the ORM layer. Closing this thread."
+  },
+  {
+    "id": "msg_teams_006",
+    "sender": "Ben Kim (Dev Lead)",
+    "timestamp": "2024-09-29T09:00:00Z",
+    "channel": "#daily-standup",
+    "message": "Morning. Pushed the final firmware adjustment for the **DRZ-453 (motor stutter)** fix. It was a hardware change but required a slight delay adjustment in the motor initialization code to prevent the brief dip."
+  },
+  {
+    "id": "msg_teams_007",
+    "sender": "Sarah Connor (Eng Lead)",
+    "timestamp": "2024-09-29T09:02:00Z",
+    "channel": "#daily-standup",
+    "message": "DRZ-452 (Safe Landing) is done and merged. We can start testing the full landing sequence integration. I'll put a demo together for the executive review tomorrow."
+  },
+  {
+    "id": "msg_teams_008",
+    "sender": "John Smith (Hardware)",
+    "timestamp": "2024-09-29T09:05:00Z",
+    "channel": "#daily-standup",
+    "message": "I'm blocked on **DRZ-469 (Radio drop)** until the new antenna casing drawings are approved. ETA for approval is Thursday."
+  },
+  {
+    "id": "msg_teams_009",
+    "sender": "Chloe Davis (Data Sci)",
+    "timestamp": "2024-09-30T10:15:00Z",
+    "channel": "#telemetry-trouble",
+    "message": "The data coming from the 'Wind Shear' sensor is inverted in the logs. Is this intentional or a bug in the latest firmware commit?"
+  },
+  {
+    "id": "msg_teams_010",
+    "sender": "Alex Chen (Architect)",
+    "timestamp": "2024-09-30T10:18:00Z",
+    "channel": "#telemetry-trouble",
+    "message": "That's intentional! Read the **`SENSOR_CONFIG.md`** in the `config/sensors` folder in the GitHub repo. It's inverted for the specific flight controller we use to align with the older v1 data format."
+  },
+  {
+    "id": "msg_teams_011",
+    "sender": "Chloe Davis (Data Sci)",
+    "timestamp": "2024-09-30T10:20:00Z",
+    "channel": "#telemetry-trouble",
+    "message": "Ah, found it. Thanks for the quick reference, that's a key piece of information that needs better visibility."
+  },
+  {
+    "id": "msg_teams_012",
+    "sender": "Ethan Hunt (QA)",
+    "timestamp": "2024-10-01T11:00:00Z",
+    "channel": "#qa-testing",
+    "message": "Can we get a new binary for the **DRZ-455 (overheating threshold)** change? The old binaries are failing on the stress test because the threshold is too low."
+  },
+  {
+    "id": "msg_teams_013",
+    "sender": "Ben Kim (Dev Lead)",
+    "timestamp": "2024-10-01T11:05:00Z",
+    "channel": "#qa-testing",
+    "message": "New build, `v1.8.2-P2`, is in the Jenkins shared folder: `//jenkins-builds/DRZ/v1.8.2-P2/`. It includes the **75°C threshold** update."
+  },
+  {
+    "id": "msg_teams_014",
+    "sender": "Sarah Connor (Eng Lead)",
+    "timestamp": "2024-10-03T09:30:00Z",
+    "channel": "#hardware-team",
+    "message": "Quick reminder for assembly: all new batteries need to be initialized with a **30% charge**, not 0%, to prevent early cell degradation and comply with shipping regulations."
+  },
+  {
+    "id": "msg_teams_015",
+    "sender": "John Smith (Hardware)",
+    "timestamp": "2024-10-03T09:35:00Z",
+    "channel": "#hardware-team",
+    "message": "Sarah, is that documented in the **`Battery_Initialization_SOP`** document in Google Drive? I need to enforce it on the floor."
+  },
+  {
+    "id": "msg_teams_016",
+    "sender": "Sarah Connor (Eng Lead)",
+    "timestamp": "2024-10-03T09:40:00Z",
+    "channel": "#hardware-team",
+    "message": "It's on page 4, but I'll add a direct link to the SOP in the main README for the hardware repo now."
+  },
+  {
+    "id": "msg_teams_017",
+    "sender": "Alex Chen (Architect)",
+    "timestamp": "2024-10-05T14:00:00Z",
+    "channel": "#general-announcements",
+    "message": "Reminder: All employees need to complete the annual security training by Friday. The link is on the Intranet homepage. We had a close call with phishing last week!"
+  },
+  {
+    "id": "msg_teams_018",
+    "sender": "Ben Kim (Dev Lead)",
+    "timestamp": "2024-10-07T11:45:00Z",
+    "channel": "#system-architecture-v2",
+    "message": "Quick check on our logging standard: Are we using Log4j or **Logback** for the Java microservices that handle cloud ingestion?"
+  },
+  {
+    "id": "msg_teams_019",
+    "sender": "Alex Chen (Architect)",
+    "timestamp": "2024-10-07T11:50:00Z",
+    "channel": "#system-architecture-v2",
+    "message": "**Decision:** We settled on **Logback** for better performance, native Groovy support, and easier configuration management. See the `Logging_Policy.pdf` in Google Drive for details."
+  },
+  {
+    "id": "msg_teams_020",
+    "sender": "Chloe Davis (Data Sci)",
+    "timestamp": "2024-10-09T09:00:00Z",
+    "channel": "#daily-standup",
+    "message": "I'm dedicating the morning to writing the comprehensive test cases for **DRZ-465 (Custom PID Tuning)**. Should be done by lunch so Ben can start implementation."
+  },
+  {
+    "id": "msg_teams_021",
+    "sender": "Ethan Hunt (QA)",
+    "timestamp": "2024-10-14T15:00:00Z",
+    "channel": "#qa-testing",
+    "message": "Urgent Bug: The UI button for 'Return to Home' (RTH) on the companion app is incorrectly labeled '**RTL**' (Return to Launch). Please fix before the release next week."
+  },
+  {
+    "id": "msg_teams_022",
+    "sender": "Ben Kim (Dev Lead)",
+    "timestamp": "2024-10-14T15:05:00Z",
+    "channel": "#qa-testing",
+    "message": "Acknowledged. Raised ticket **DRZ-475** for the RTH/RTL text bug. Will be in the patch tonight."
+  },
+  {
+    "id": "msg_teams_023",
+    "sender": "Sarah Connor (Eng Lead)",
+    "timestamp": "2024-10-16T11:20:00Z",
+    "channel": "#hardware-team",
+    "message": "Who has the master key for the lab cabinet with the new LiDAR test unit? I need it urgently for DRZ-462 setup."
+  },
+  {
+    "id": "msg_teams_024",
+    "sender": "John Smith (Hardware)",
+    "timestamp": "2024-10-16T11:25:00Z",
+    "channel": "#hardware-team",
+    "message": "I do. I left it with the front desk manager, Jane. **Key is in the lockbox labeled 'ENG-A'**."
+  },
+  {
+    "id": "msg_teams_025",
+    "sender": "Alex Chen (Architect)",
+    "timestamp": "2024-10-28T16:30:00Z",
+    "channel": "#general-announcements",
+    "message": "Great work on the firmware release **v1.8.2**! Telemetry stream stability is up **15%** due to the Protobuf refactor (DRZ-459). Celebrate small wins! 🎉"
+  },
+  {
+    "id": "msg_teams_026",
+    "sender": "Ethan Hunt (QA)",
+    "timestamp": "2024-10-29T10:00:00Z",
+    "channel": "#qa-testing",
+    "message": "Confirmed the new build fixes the iOS 17 beta crash (DRZ-463). Closing my test case now."
+  }
+]
