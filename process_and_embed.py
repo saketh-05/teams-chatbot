@@ -22,11 +22,11 @@ if not os.path.exists(CHROMA_DB_PATH):
 # Initialize ChromaDB client
 chroma_client = chromadb.PersistentClient(
     path=CHROMA_DB_PATH, 
-    settings=chromadb.Settings(anonymized_telemetry=False, is_persistent=True)
+    settings=chromadb.Settings(anonymized_telemetry=False, is_persistent=True) # type: ignore
 )
 
 # Initialize embedding function
-gemini_ef = chromadb.utils.embedding_functions.GoogleGenerativeAiEmbeddingFunction(
+gemini_ef = chromadb.utils.embedding_functions.GoogleGenerativeAiEmbeddingFunction( # type: ignore
     api_key=os.getenv("GEMINI_API_KEY"), 
     model_name=EMBEDDING_MODEL
 )
@@ -165,19 +165,19 @@ def main():
     process_jira_data()
     
     # Process Google Drive data (if credentials available)
-    if os.path.exists("credentials.json"):
-        try:
-            drive_connector = DriveConnector()
-            process_connector_data(
-                drive_connector, 
-                "drive_documents_knowledge",
-                max_results=50,  # Adjust as needed
-                file_types=['application/vnd.google-apps.document', 'text/plain']
-            )
-        except Exception as e:
-            print(f"❌ Error processing Drive data: {str(e)}")
-    else:
-        print("⚠️ Google Drive credentials not found. Skipping Drive connector.")
+    # if os.path.exists("credentials.json"):
+    #     try:
+    #         drive_connector = DriveConnector()
+    #         process_connector_data(
+    #             drive_connector, 
+    #             "drive_documents_knowledge",
+    #             max_results=50,  # Adjust as needed
+    #             file_types=['application/vnd.google-apps.document', 'text/plain']
+    #         )
+    #     except Exception as e:
+    #         print(f"❌ Error processing Drive data: {str(e)}")
+    # else:
+    #     print("⚠️ Google Drive credentials not found. Skipping Drive connector.")
     
     # Process Slack data (if token available)
     if os.getenv("SLACK_BOT_TOKEN"):
@@ -200,7 +200,7 @@ def main():
             process_connector_data(
                 github_connector,
                 "github_knowledge",
-                repos=[], # Can be configured from a config file
+                repos=["saketh-05/teams-chatbot", "saketh-05/codesen"],
                 include_issues=True,
                 include_prs=True,
                 include_readme=True,

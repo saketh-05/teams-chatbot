@@ -1,0 +1,146 @@
+[
+  {
+    "query": "What are the latest project requirements?",
+    "sources": [
+      "drive"
+    ],
+    "expected_sources": [
+      "Drive: Project Requirements"
+    ],
+    "expected_keywords": [
+      "requirements",
+      "project",
+      "specification"
+    ]
+  },
+  {
+    "query": "Who is the project manager for the current sprint?",
+    "sources": [
+      "drive"
+    ],
+    "expected_sources": [
+      "Drive: Team Structure"
+    ],
+    "expected_keywords": [
+      "manager",
+      "sprint",
+      "team"
+    ]
+  },
+  {
+    "query": "What was discussed in yesterday's standup?",
+    "sources": [
+      "slack"
+    ],
+    "expected_sources": [
+      "Slack: Channel #daily-standup"
+    ],
+    "expected_keywords": [
+      "standup",
+      "update",
+      "progress"
+    ]
+  },
+  {
+    "query": "What are the current blockers in the project?",
+    "sources": [
+      "slack"
+    ],
+    "expected_sources": [
+      "Slack: Channel #project-status"
+    ],
+    "expected_keywords": [
+      "blocker",
+      "issue",
+      "problem"
+    ]
+  },
+  {
+    "query": "What was the outcome of the last architecture meeting?",
+    "sources": [
+      "teams"
+    ],
+    "expected_sources": [
+      "Teams: Channel #architecture"
+    ],
+    "expected_keywords": [
+      "architecture",
+      "decision",
+      "design"
+    ]
+  },
+  {
+    "query": "What are the current deployment issues?",
+    "sources": [
+      "teams"
+    ],
+    "expected_sources": [
+      "Teams: Channel #devops"
+    ],
+    "expected_keywords": [
+      "deployment",
+      "issue",
+      "pipeline"
+    ]
+  },
+  {
+    "query": "What are the high priority bugs?",
+    "sources": [
+      "jira"
+    ],
+    "expected_sources": [
+      "Jira: BUG-"
+    ],
+    "expected_keywords": [
+      "bug",
+      "high",
+      "priority"
+    ]
+  },
+  {
+    "query": "What features are planned for the next release?",
+    "sources": [
+      "jira"
+    ],
+    "expected_sources": [
+      "Jira: FEAT-"
+    ],
+    "expected_keywords": [
+      "feature",
+      "release",
+      "roadmap"
+    ]
+  },
+  {
+    "query": "What is the current status of the authentication feature?",
+    "sources": [
+      "jira",
+      "slack"
+    ],
+    "expected_sources": [
+      "Jira: AUTH-",
+      "Slack: Channel #auth-team"
+    ],
+    "expected_keywords": [
+      "authentication",
+      "status",
+      "feature"
+    ]
+  },
+  {
+    "query": "What are the technical specifications for the new API?",
+    "sources": [
+      "drive",
+      "teams"
+    ],
+    "expected_sources": [
+      "Drive: API Specification",
+      "Teams: Channel #api-team"
+    ],
+    "expected_keywords": [
+      "API",
+      "specification",
+      "technical"
+    ]
+  }
+]

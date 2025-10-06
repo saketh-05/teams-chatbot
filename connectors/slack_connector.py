@@ -5,8 +5,8 @@ import logging
 from typing import List, Dict, Any
 from datetime import datetime
 from dotenv import load_dotenv
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
+from slack_sdk import WebClient # type: ignore
+from slack_sdk.errors import SlackApiError # type: ignore
 from connector_interface import ConnectorInterface
 
 # Configure logging
@@ -15,7 +15,7 @@ logger = logging.getLogger("SlackConnector")
 class SlackConnector(ConnectorInterface):
     """Slack connector to fetch messages from channels and conversations"""
     
-    def __init__(self, token: str = None):
+    def __init__(self, token: str = None): # type: ignore
         """Initialize the Slack connector with token"""
         self.token = token or os.getenv("SLACK_BOT_TOKEN")
         self.client = None
@@ -51,7 +51,7 @@ class SlackConnector(ConnectorInterface):
             self.authenticated = False
             return False
     
-    def fetch_data(self, channels: List[str] = None, 
+    def fetch_data(self, channels: List[str] = None,  # type: ignore
                   days_history: int = 7, 
                   limit: int = 100, **kwargs) -> List[Dict[str, Any]]:
         """

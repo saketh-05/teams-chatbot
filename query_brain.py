@@ -28,7 +28,7 @@ def query_collection(collection_name, query_text, query_embedding, n_results=DEF
             query_embeddings=[query_embedding],
             query_texts=[query_text],
             n_results=n_results,
-            include=['documents', 'metadatas']
+            include=['documents', 'metadatas'] # type: ignore
         )
         return results
     except Exception as e:

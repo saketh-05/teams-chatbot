@@ -1,3 +1,5 @@
 chromadb
 google-generativeai
 python-dotenv
+google_auth_oauthlib
+pandas
