@@ -194,10 +194,10 @@ def process_connector_data(connector: ConnectorInterface, collection_name: str, 
 def main():
     """Main function to run the data processing pipeline"""
     # Process Teams data (from file for now)
-    # process_teams_data() # Uncomment if Teams data file is available
+    process_teams_data() # Uncomment if Teams data file is available
     
     # Process Jira data (from file for now)
-    # process_jira_data() # Uncomment if Jira data file is available
+    process_jira_data() # Uncomment if Jira data file is available
     
     # Process Google Drive data (if credentials available)
     if os.path.exists("credentials.json"):
@@ -216,36 +216,36 @@ def main():
         print("⚠️ Google Drive credentials not found. Skipping Drive connector.")
     
     # Process Slack data (if token available)
-    # if os.getenv("SLACK_BOT_TOKEN"): # Uncomment if Slack integration is needed
-    #     try:
-    #         slack_connector = SlackConnector()
-    #         process_connector_data(
-    #             slack_connector, 
-    #             "slack_messages_knowledge",
-    #             limit=100  # Adjust as needed
-    #         )
-    #     except Exception as e:
-    #         print(f"❌ Error processing Slack data: {str(e)}")
-    # else:
-    #     print("⚠️ Slack token not found. Skipping Slack connector.")
+    if os.getenv("SLACK_BOT_TOKEN"): # Uncomment if Slack integration is needed
+        try:
+            slack_connector = SlackConnector()
+            process_connector_data(
+                slack_connector, 
+                "slack_messages_knowledge",
+                limit=100  # Adjust as needed
+            )
+        except Exception as e:
+            print(f"❌ Error processing Slack data: {str(e)}")
+    else:
+        print("⚠️ Slack token not found. Skipping Slack connector.")
         
     # Process GitHub data (if token available)
-    # if os.getenv("GITHUB_ACCESS_TOKEN"): # Uncomment if GitHub integration is needed
-    #     try:
-    #         github_connector = GitHubConnector()
-    #         process_connector_data(
-    #             github_connector,
-    #             "github_knowledge",
-    #             repos=["saketh-05/teams-chatbot", "saketh-05/codesen"],
-    #             include_issues=True,
-    #             include_prs=True,
-    #             include_readme=True,
-    #             max_items=50
-    #         )
-    #     except Exception as e:
-    #         print(f"❌ Error processing GitHub data: {str(e)}")
-    # else:
-    #     print("⚠️ GitHub token not found. Skipping GitHub connector.")
+    if os.getenv("GITHUB_ACCESS_TOKEN"): # Uncomment if GitHub integration is needed
+        try:
+            github_connector = GitHubConnector()
+            process_connector_data(
+                github_connector,
+                "github_knowledge",
+                repos=["saketh-05/teams-chatbot", "saketh-05/codesen"],
+                include_issues=True,
+                include_prs=True,
+                include_readme=True,
+                max_items=50
+            )
+        except Exception as e:
+            print(f"❌ Error processing GitHub data: {str(e)}")
+    else:
+        print("⚠️ GitHub token not found. Skipping GitHub connector.")
     
     print("\n✅ All data sources processed and embedded successfully!")
 

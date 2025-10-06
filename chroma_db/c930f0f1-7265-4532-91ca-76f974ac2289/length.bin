@@ -1,3 +1,1 @@
-Ticket KEY: DRZ-473. Summary: Security: Run static analysis on new comms module. Status: Done. Description: Perform a security review of the new encrypted communication module (v3) before deployment.
-Comments:
-Comment by Alex Chen: Static analysis passed. **No critical buffer overflow or injection vulnerabilities found** in the C++ comms module.ing uses the **`release-key-v2`** environment variabl
+invalid type: string "Ticket KEY: DRZ-464. Summary: Update drone maintenance schedule documentation. Status: Done. Description: Revise the gimbal lubrication frequency from 100 hours to 75 hours of flight time.\nComments:\nComment by Ethan Hunt: Documentation revised and uploaded to the 'SOP' folder in Google Drive. **Key change:** Gimbal lubrication every **75 flight hours**.", expected f64ariabl
