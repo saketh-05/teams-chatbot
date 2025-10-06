@@ -45,6 +45,11 @@ class ConfigManager:
                         "enabled": False,
                         "bot_token_env": "SLACK_BOT_TOKEN"
                     },
+                    "github": {
+                        "enabled": False,
+                        "token_env": "GITHUB_ACCESS_TOKEN",
+                        "repositories": []
+                    },
                     "teams": {
                         "enabled": False,
                         "client_id_env": "TEAMS_CLIENT_ID",

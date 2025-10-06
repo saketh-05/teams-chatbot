@@ -7,6 +7,7 @@ import chromadb
 from connector_interface import ConnectorInterface
 from drive_connector import DriveConnector
 from slack_connector import SlackConnector
+from github_connector import GitHubConnector
 
 # Load environment variables
 load_dotenv()
@@ -191,6 +192,24 @@ def main():
             print(f"❌ Error processing Slack data: {str(e)}")
     else:
         print("⚠️ Slack token not found. Skipping Slack connector.")
+        
+    # Process GitHub data (if token available)
+    if os.getenv("GITHUB_ACCESS_TOKEN"):
+        try:
+            github_connector = GitHubConnector()
+            process_connector_data(
+                github_connector,
+                "github_knowledge",
+                repos=[], # Can be configured from a config file
+                include_issues=True,
+                include_prs=True,
+                include_readme=True,
+                max_items=50
+            )
+        except Exception as e:
+            print(f"❌ Error processing GitHub data: {str(e)}")
+    else:
+        print("⚠️ GitHub token not found. Skipping GitHub connector.")
     
     print("\n✅ All data sources processed and embedded successfully!")
 
